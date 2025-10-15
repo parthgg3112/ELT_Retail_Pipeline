@@ -1,4 +1,3 @@
-# src/setup_all_source_data.py
 
 import pandas as pd
 from faker import Faker
@@ -10,7 +9,7 @@ from dotenv import load_dotenv
 import json
 from datetime import datetime
 
-# --- Load Environment Variables and Set Up DB Connection ---
+
 load_dotenv()
 db_password = os.getenv("POSTGRES_PASSWORD")
 if not db_password:
@@ -27,15 +26,15 @@ def setup_sources():
     """
     start_time = time.time()
     
-    # --- Define Record Counts ---
+    
     num_customers = 2000
     num_products = 500
     num_transactions = 20000
 
-    # --- 1. Generate Master Data ---
+    
     print("Generating master data for customers and products...")
 
-    # Customer Data
+    
     customers_data = [{
         'customer_id': i,
         'first_name': fake.first_name(),
@@ -47,16 +46,16 @@ def setup_sources():
         'registration_date': fake.date_this_decade()
     } for i in range(1, num_customers + 1)]
     customers_df = pd.DataFrame(customers_data)
-    # Convert registration_date to datetime objects for comparison
+    
     customers_df['registration_date'] = pd.to_datetime(customers_df['registration_date'])
 
-    # ... (Product Data generation is the same as before) ...
+    
     product_templates = {
         'Electronics': [f"{random.choice(['Quantum', 'Astra', 'Nova'])} {random.randint(24, 75)}-inch TV", f"{fake.word().capitalize()} Wireless Headphones"],
         'Home Goods': [f"{fake.color_name().capitalize()} Cotton Sheet Set", "Stainless Steel Cookware Set"],
         'Apparel': [f"Men's Classic {random.choice(['T-Shirt', 'Jeans'])}", f"Women's {random.choice(['Summer Dress', 'Blouse'])}"],
         'Books': [f"The Mystery of {fake.last_name()}'s Manor", f"A Guide to {fake.word().capitalize()} Cooking"],
-        # 'Groceries': [f"Organic {fake.fruit()}", f"Fresh {fake.vegetable()}"],
+    
         'Toys': ["LEGO City Fire Station", "Remote Control Race Car"]
     }
     categories = list(product_templates.keys())
@@ -69,7 +68,7 @@ def setup_sources():
     products_df = pd.DataFrame(products_data)
 
 
-    # --- 2. Generate and Load OLTP Data (Sales) with Logical Consistency ---
+    
     print("\nGenerating sales data for PostgreSQL...")
     transactions_data = []
     sales_details_data = []
@@ -77,24 +76,19 @@ def setup_sources():
     for i in range(1, num_transactions + 1):
         transaction_id = 10000 + i
         
-        # --- KEY CHANGE STARTS HERE ---
-        # First, pick a random customer for this transaction
         customer_id = random.randint(1, num_customers)
         
-        # Get that customer's registration date from the DataFrame
         registration_date = customers_df.loc[customers_df['customer_id'] == customer_id, 'registration_date'].iloc[0]
         
-        # Now, generate a transaction date that is guaranteed to be AFTER the registration date
         transaction_date = fake.date_time_between(start_date=registration_date, end_date='now')
-        # --- KEY CHANGE ENDS HERE ---
+        
 
         transactions_data.append({
             'transaction_id': transaction_id,
-            'customer_id': customer_id, # Use the selected customer
-            'transaction_date': transaction_date # Use the logically consistent date
+            'customer_id': customer_id, 
+            'transaction_date': transaction_date 
         })
         
-        # Generate the sales details for this transaction
         num_items = random.randint(1, 5)
         product_ids = random.sample(range(1, num_products + 1), num_items)
         for product_id in product_ids:
@@ -113,7 +107,6 @@ def setup_sources():
         print(f"Error writing to PostgreSQL: {e}")
         return
 
-    # --- 3. Save Product and Customer Data to Files ---
     print("\nSaving product data to JSON file...")
     if not os.path.exists('data'):
         os.makedirs('data')
@@ -122,12 +115,12 @@ def setup_sources():
     print(f"-> Saved {len(products_df)} products to data/products.json.")
 
     print("\nSaving customer data to CSV file...")
-    customers_df['registration_date'] = customers_df['registration_date'].dt.date # Convert back to string for CSV
+    customers_df['registration_date'] = customers_df['registration_date'].dt.date 
     customers_df.to_csv('data/customers.csv', index=False)
     print(f"-> Saved {len(customers_df)} customers to data/customers.csv.")
     
     end_time = time.time()
-    print(f"\nSource data setup finished in {end_time - start_time:.2f} seconds. ✅")
+    print(f"\nSource data setup finished in {end_time - start_time:.2f} seconds.")
 
 if __name__ == "__main__":
     setup_sources()
