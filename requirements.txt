@@ -1,6 +1,4 @@
 pandas
 boto3
-os
 flask
-json
 sqlalchemy
