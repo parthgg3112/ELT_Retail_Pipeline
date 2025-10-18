@@ -4,7 +4,7 @@ This project builds a robust, end-to-end cloud data pipeline for GlobalMart Reta
 
 ## Project Overview
 
-The pipeline collects data from various sources (OLTP database, external API, CSV files), lands it in an AWS S3 data lake, and then processes it through Snowflake's Medallion Architecture (Bronze, Silver, Gold layers) using Streams and Tasks for near real-time transformations. Orchestration can be handled using Github Actions & AWS EventBridge, currently it's just manual running of scripts, while once into S3 buckets, snoflake takes care of itself
+The pipeline collects data from various sources (OLTP database, external API, CSV files), lands it in an AWS S3 data lake, and then processes it through Snowflake's Medallion Architecture (Bronze, Silver, Gold layers) using Streams and Tasks for near real-time transformations. Orchestration can be handled using Github Actions & AWS EventBridge, currently it's just manual running of scripts, while once into S3 buckets, snowflake takes care of itself
 
 ##  Key Features
 
@@ -25,7 +25,7 @@ The pipeline collects data from various sources (OLTP database, external API, CS
     * **GitHub Actions:** Automates the daily batch ETL job and deploys Snowflake SQL changes (CI/CD).
     * **AWS EventBridge:** Schedules the AWS Lambda function for API data ingestion.
 * **Secrets Management:** Securely stores database and API credentials using AWS Secrets Manager.
-* **CI/CD for Database (DataOps):** Automates deployment of Snowflake schema changes (tables, views, streams, tasks) directly from Git using GitHub Actions.
+* **CI/CD for Database (DataOps,Future scope of work):** Automates deployment of Snowflake schema changes (tables, views, streams, tasks) directly from Git using GitHub Actions.
 
 ## 🛠️ Technologies Used
 
@@ -39,3 +39,4 @@ The pipeline collects data from various sources (OLTP database, external API, CS
 * **Orchestration & CI/CD:** GitHub Actions
 * **Python Libraries:** Pandas, SQLAlchemy, Psycopg2-binary, Boto3, urllib3
 * **Version Control:** Git
+
