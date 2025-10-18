@@ -31,4 +31,4 @@ jobs:
 
     - name: 5. Run the ETL script
       run: |
-        python src/extract_and_load_to_s3.py
+        python3 src/extract_and_load_to_s3.py
